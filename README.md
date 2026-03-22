@@ -237,6 +237,13 @@ oracle-apex-solution-20260321/
 - **v1.1.0** - Agregadas mejores prácticas de seguridad PL/SQL
 - **v1.0.0** - Versión inicial con ejemplos básicos
 
+## 🔒 Seguridad PL/SQL
+
+- Usar binds (`:VAR`) para prevenir SQL injection
+- Validar inputs en procedimientos
+- Implementar auditoría con triggers
+- Usar EXECUTE IMMEDIATE con precaución
+
 ## 🤝 Contribución
 
 ¡Añade más procedures y mejora los existentes!
