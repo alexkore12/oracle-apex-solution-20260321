@@ -1,13 +1,24 @@
-# Oracle
+# Logs
 *.log
-*.lst
-*.pls
-*.pkb
-*.pks
+logs/
 
-# SQL Developer
-*.sqldeveloper
+# Environment
+.env
+.env.local
+.env.*.local
 
 # OS
 .DS_Store
 Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build
+dist/
+build/
+*.egg-info/
