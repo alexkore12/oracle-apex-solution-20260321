@@ -1,12 +1,12 @@
 # Oracle
 *.log
 *.lst
-*.out
+*.pls
+*.pkb
+*.pks
 
-# IDE
-.vscode/
-.idea/
-*.swp
+# SQL Developer
+*.sqldeveloper
 
 # OS
 .DS_Store
