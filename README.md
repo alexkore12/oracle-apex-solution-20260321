@@ -1,123 +1,158 @@
-# Oracle APEX - PL/SQL Solutions
+# 🗄️ Oracle APEX Solution - PL/SQL Procedures
 
-Colección completa de procedimientos, funciones y triggers para Oracle Database.
+Colección de procedimientos, funciones y triggers PL/SQL para Oracle APEX.
 
-## 🚀 Características
+## 📋 Descripción
 
-- **Procedimientos** - sp_create_order y más
-- **Funciones** - fn_get_total_orders
-- **Triggers** - Auditoría automática
-- **Oracle 19c+** - Compatible con Oracle Database
-- **APEX** - Listo para Oracle APEX
+Este proyecto contiene ejemplos de PL/SQL para Oracle APEX:
+- **Procedures** - Procedimientos almacenados
+- **Functions** - Funciones reutilizables
+- **Triggers** - Automatización de eventos
 
-## 📦 Contenido
+## 🛠️ Componentes
 
-### Procedimientos
+### Procedures
 
 | Procedure | Descripción |
 |-----------|-------------|
-| `sp_create_order` | Crear orden con validación |
-| `sp_update_order` | Actualizar orden existente |
-| `sp_delete_order` | Eliminar orden |
+| `sp_create_order` | Crea un nuevo pedido |
 
-### Funciones
+### Functions
 
 | Function | Descripción |
 |----------|-------------|
-| `fn_get_total_orders` | Calcular total de órdenes por cliente |
-| `fn_get_order_count` | Contar órdenes |
+| `fn_get_total_orders` | Calcula total de pedidos por cliente |
 
 ### Triggers
 
 | Trigger | Descripción |
 |---------|-------------|
-| `tr_order_audit` | Auditoría de cambios en órdenes |
+| `tr_order_audit` | Audita inserciones en orders |
 
-## ⚙️ Instalación
+## 🚀 Uso
 
-### SQL*Plus
+### Ejecutar en SQL*Plus
 
 ```bash
-sqlplus user/password@//localhost:1521/orclpdb1
-@plsql_procedures.sql
+sqlplus system/password@localhost:1521/orclpdb1
+SQL> @plsql_procedures.sql
 ```
 
-### Oracle APEX
+### Ejecutar en SQL Developer
 
-1. Abrir SQL Workshop
-2. Ir a Script Editor
-3. Ejecutar `plsql_procedures.sql`
+1. Abre el archivo `plsql_procedures.sql`
+2. Presiona F5 o Run Script
 
-## 📖 Uso
+## 📝 Código
 
-### Crear Orden
+### Procedure: sp_create_order
 
 ```sql
-EXEC sp_create_order(
-    p_customer_id => 1,
-    p_customer_name => 'Cliente Ejemplo',
-    p_amount => 1000.00
+CREATE OR REPLACE PROCEDURE sp_create_order (
+    p_id IN NUMBER,
+    p_customer IN VARCHAR2,
+    p_amount IN NUMBER
+) AS
+BEGIN
+    INSERT INTO orders (id, customer, amount, created_date)
+    VALUES (p_id, p_customer, p_amount, SYSDATE);
+    COMMIT;
+END;
+/
+```
+
+### Function: fn_get_total_orders
+
+```sql
+CREATE OR REPLACE FUNCTION fn_get_total_orders (
+    p_customer IN VARCHAR2
+) RETURN NUMBER AS
+    v_total NUMBER;
+BEGIN
+    SELECT SUM(amount) INTO v_total
+    FROM orders
+    WHERE customer = p_customer;
+    RETURN NVL(v_total, 0);
+END;
+/
+```
+
+### Trigger: tr_order_audit
+
+```sql
+CREATE OR REPLACE TRIGGER tr_order_audit
+AFTER INSERT ON orders
+FOR EACH ROW
+BEGIN
+    INSERT INTO order_audit (order_id, action, audit_date)
+    VALUES (:NEW.id, 'INSERTED', SYSDATE);
+END;
+/
+```
+
+## 📋 Tablas Requeridas
+
+```sql
+-- Tabla de pedidos
+CREATE TABLE orders (
+    id NUMBER PRIMARY KEY,
+    customer VARCHAR2(100),
+    amount NUMBER(10,2),
+    created_date DATE DEFAULT SYSDATE
+);
+
+-- Tabla de auditoría
+CREATE TABLE order_audit (
+    order_id NUMBER,
+    action VARCHAR2(20),
+    audit_date DATE
 );
 ```
 
-### Calcular Total
+## 🔧 Ejemplos de Uso
+
+### Llamar Procedure
 
 ```sql
-SELECT fn_get_total_orders('Cliente Ejemplo') AS total
-FROM DUAL;
--- Resultado: 1000.00
-```
-
-### Auditoría
-
-Los triggers registran automáticamente:
-
-- INSERT - Nueva orden creada
-- UPDATE - Orden actualizada
-- DELETE - Orden eliminada
-
-```sql
--- Ver auditoría
-SELECT * FROM order_audit_log
-ORDER BY audit_timestamp DESC;
-```
-
-## 🔒 Mejores Prácticas PL/SQL
-
-### Seguridad
-
-1. **USING clause** - Siempre usar parámetros绑定
-2. **Validación** - Verificar input antes de procesar
-3. **Excepciones** - Manejo correcto de errores
-4. **AUDIT** - Registrar operaciones sensibles
-
-### Rendimiento
-
-1. **Bulk Collect** - Para grandes volúmenes
-2. **INDEX** - Índices en columnas frecuentes
-3. **PL/SQL Result Cache** - Cachear funciones
-
-## 🧪 Testing
-
-```sql
--- Test procedure
 BEGIN
-    sp_create_order(1, 'Test', 500);
+    sp_create_order(
+        p_id => 1,
+        p_customer => 'Juan Pérez',
+        p_amount => 150.00
+    );
 END;
 /
-
--- Test function
-SELECT fn_get_total_orders('Test') FROM DUAL;
-
--- Test trigger (verificar auditoría)
-SELECT * FROM order_audit_log;
 ```
 
-## 📝 Licencia
+### Usar Function
 
-MIT - Alejandro Kore
+```sql
+SELECT fn_get_total_orders('Juan Pérez') AS total
+FROM dual;
+```
 
-## 🤖 Actualizado por
+### Ver Auditoría
 
-OpenClaw AI Assistant - 2026-03-21
-*Mejoras: Documentación completa PL/SQL, mejores prácticas*
+```sql
+SELECT * FROM order_audit ORDER BY audit_date DESC;
+```
+
+## 📁 Archivos
+
+```
+oracle-apex-solution-20260321/
+├── plsql_procedures.sql  # Procedures, functions, triggers
+└── README.md              # Este archivo
+```
+
+## 📝 Changelog
+
+- **v1.0.0** - Versión inicial con ejemplos básicos
+
+## 🤝 Contribución
+
+¡Añade más procedures y mejora los existentes!
+
+## 📄 Licencia
+
+MIT License - Uso libre.
