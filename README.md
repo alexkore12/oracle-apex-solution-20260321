@@ -9,6 +9,92 @@ Este proyecto contiene ejemplos de PL/SQL para Oracle APEX:
 - **Functions** - Funciones reutilizables
 - **Triggers** - Automatización de eventos
 
+## 🔐 Seguridad
+
+### Mejores Prácticas PL/SQL
+
+1. **Usar绑定变量 (Bind Variables)**
+   - Siempre usar parámetros en lugar de concatenación
+   - Previene SQL Injection
+
+```sql
+-- ✅ Correcto
+CREATE PROCEDURE sp_get_customer (p_id IN NUMBER) AS
+BEGIN
+    SELECT * FROM customers WHERE id = p_id;
+END;
+
+-- ❌ Incorrecto - SQL Injection
+CREATE PROCEDURE sp_get_customer (p_id IN VARCHAR2) AS
+BEGIN
+    EXECUTE IMMEDIATE 'SELECT * FROM customers WHERE id = ' || p_id;
+END;
+```
+
+2. **Principio de Mínimo Privilegio**
+   - Crear usuarios específicos para cada aplicación
+   - No usar SYSTEM o SYS para aplicaciones
+
+```sql
+-- Crear usuario de aplicación con privilegios específicos
+CREATE USER app_user IDENTIFIED BY "secure_password";
+GRANT CONNECT, RESOURCE TO app_user;
+GRANT EXECUTE ON sp_create_order TO app_user;
+```
+
+3. **Auditoría**
+   - Habilitar auditoría para operaciones sensibles
+   - Mantener logs de cambios
+
+```sql
+-- Auditoría de tabla
+AUDIT INSERT, UPDATE, DELETE ON orders;
+```
+
+4. **Validar Entrada**
+   - Siempre validar parámetros de entrada
+   - Usar tipos de datos apropiados
+
+```sql
+CREATE PROCEDURE sp_create_order (
+    p_id IN NUMBER,
+    p_customer IN VARCHAR2,
+    p_amount IN NUMBER
+) AS
+BEGIN
+    -- Validar entrada
+    IF p_amount < 0 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Amount must be positive');
+    END IF;
+    
+    IF p_customer IS NULL OR LENGTH(p_customer) > 100 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Invalid customer name');
+    END IF;
+    
+    -- Procedure logic
+    INSERT INTO orders (id, customer, amount, created_date)
+    VALUES (p_id, p_customer, p_amount, SYSDATE);
+    COMMIT;
+END;
+```
+
+5. **Evitar Texto Plano de Contraseñas**
+   - Usar funciones hash para contraseñas
+   - No almacenar contraseñas en texto plano
+
+```sql
+-- Usar DBMS_CRYPTO para hashing
+CREATE OR REPLACE FUNCTION fn_hash_password (
+    p_password IN VARCHAR2
+) RETURN RAW AS
+BEGIN
+    RETURN DBMS_CRYPTO.HASH(
+        UTL_RAW.CAST_TO_RAW(p_password),
+        DBMS_CRYPTO.HASH_SHA256
+    );
+END;
+```
+
 ## 🛠️ Componentes
 
 ### Procedures
@@ -142,11 +228,13 @@ SELECT * FROM order_audit ORDER BY audit_date DESC;
 ```
 oracle-apex-solution-20260321/
 ├── plsql_procedures.sql  # Procedures, functions, triggers
+├── SECURITY.md           # Guía de seguridad
 └── README.md              # Este archivo
 ```
 
 ## 📝 Changelog
 
+- **v1.1.0** - Agregadas mejores prácticas de seguridad PL/SQL
 - **v1.0.0** - Versión inicial con ejemplos básicos
 
 ## 🤝 Contribución
