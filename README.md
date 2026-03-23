@@ -1,144 +1,195 @@
-# Oracle APEX - PL/SQL Solutions
+# 🗄️ Oracle APEX Advanced Solution
 
-Colección completa de procedimientos, funciones y triggers para Oracle Database.
+[![Oracle APEX](https://img.shields.io/badge/Oracle%20APEX-23.x-orange.svg)](https://apex.oracle.com)
+[![PL/SQL](https://img.shields.io/badge/PL/SQL-Advanced-green.svg)](https://www.oracle.com/database/technologies/appdev/plsql.html)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com)
 
-## 🚀 Características
+## 📋 Descripción
 
-- **Procedimientos** - sp_create_order y más
-- **Funciones** - fn_get_total_orders
-- **Triggers** - Auditoría automática
-- **Oracle 19c+** - Compatible con Oracle Database
-- **APEX** - Listo para Oracle APEX
+Colección avanzada de scripts PL/SQL para Oracle APEX, incluyendo procedimientos almacenados, triggers, funciones y patrones de optimización para aplicaciones empresariales.
 
-## 📦 Contenido
+## ✨ Características
 
-### Procedimientos
+- 📦 **Procedimientos Almacenados**: PL/SQL optimizado para alto rendimiento
+- 🔄 **Triggers**: Automatización de lógica de negocio
+- 📊 **Funciones**: Funciones personalizadas para reportes
+- 🎯 **Patrones Avanzados**: Mejores prácticas Oracle
+- 🛡️ **Seguridad**: Stored procedures con validación de entrada
+- 📈 **Optimización**: Índices, particiones y caching
+- 🐳 **Docker Ready**: Contenedorizable con docker-compose
 
-| Procedure | Descripción |
-|-----------|-------------|
-| `sp_create_order` | Crear orden con validación |
-| `sp_update_order` | Actualizar orden existente |
-| `sp_delete_order` | Eliminar orden |
+## 🚀 Uso
 
-### Funciones
+### Prerequisites
 
-| Function | Descripción |
-|----------|-------------|
-| `fn_get_total_orders` | Calcular total de órdenes por cliente |
-| `fn_get_order_count` | Contar órdenes |
+- Oracle Database 19c o superior
+- Oracle APEX 23.x
+- SQL*Plus o SQLcl
 
-### Triggers
-
-| Trigger | Descripción |
-|---------|-------------|
-| `tr_order_audit` | Auditoría de cambios en órdenes |
-
-## ⚙️ Instalación
-
-### SQL*Plus
+### Docker Compose
 
 ```bash
-sqlplus user/password@//localhost:1521/orclpdb1
+# Iniciar Oracle
+docker-compose up -d
+
+# Ver estado
+docker-compose ps
+```
+
+### Ejecutar Scripts Manualmente
+
+```bash
+# Conectar a Oracle
+sqlplus usuario/password@//localhost:1521/XEPDB1
+
+# Ejecutar scripts en orden
 @plsql_procedures.sql
+@advanced_plsql.sql
 ```
 
-### Oracle APEX
-
-1. Abrir SQL Workshop
-2. Ir a Script Editor
-3. Ejecutar `plsql_procedures.sql`
-
-## 📖 Uso
-
-### Crear Orden
+### Usar Procedimientos
 
 ```sql
-EXEC sp_create_order(
-    p_customer_id => 1,
-    p_customer_name => 'Cliente Ejemplo',
-    p_amount => 1000.00
-);
+-- Verificar procedimientos disponibles
+SELECT object_name, object_type 
+FROM user_objects 
+WHERE object_type IN ('PROCEDURE', 'FUNCTION', 'PACKAGE');
+
+-- Ejecutar procedimiento
+EXEC nombre_procedimiento(parametros);
 ```
 
-### Calcular Total
+## 📁 Estructura
+
+```
+oracle-apex-solution-20260321/
+├── advanced_plsql.sql        # PL/SQL avanzado
+├── plsql_procedures.sql      # Procedimientos base
+├── setup.sh                  # Script de configuración
+├── health_check.py           # Health check
+├── docker-compose.yml        # Orquestación Docker
+├── README.md                 # Este archivo
+├── SECURITY.md               # Políticas de seguridad
+├── CODE_OF_CONDUCT.md        # Código de conducta
+├── CONTRIBUTING.md           # Guía de contribución
+├── CODEOWNERS                # Owners del código
+├── LICENSE
+└── .gitignore
+```
+
+## ⚙️ Configuración
+
+### Variables de Entorno
+
+| Variable | Descripción | Default |
+|----------|-------------|---------|
+| `ORACLE_USER` | Usuario de conexión | apexuser |
+| `ORACLE_PASS` | Password de conexión | password |
+| `ORACLE_HOST` | Host de Oracle | localhost |
+| `ORACLE_PORT` | Puerto de Oracle | 1521 |
+| `ORACLE_SERVICE` | Service name | XEPDB1 |
+
+### Conexión SQL*Plus
+
+```bash
+# Conexión básica
+sqlplus user/pass@host:port/service
+
+# Como SYSDBA
+sqlplus / as sysdba
+
+# Con archivo de conexión
+sqlplus user/pass@connect_string
+```
+
+## 📄 Scripts Disponibles
+
+### plsql_procedures.sql
+
+Contiene procedimientos fundamentales:
+
+| Procedimiento | Descripción |
+|---------------|-------------|
+| `create_audit_trigger` | Trigger de auditoría |
+| `log_operations` | Logging de operaciones |
+| `validate_input` | Validación de entrada |
+
+### advanced_plsql.sql
+
+Contiene procedimientos avanzados:
+
+| Procedimiento | Descripción |
+|---------------|-------------|
+| `bulk_operations` | Operaciones en bulk |
+| `dynamic_sql_handler` | SQL dinámico seguro |
+| `pagination_helper` | Paginación optimizada |
+| `cache_manager` | Gestión de cache |
+
+## 🔐 Seguridad
+
+### Principios de Seguridad
+
+1. **Principio de mínimo privilegio**: Usuarios solo tienen permisos necesarios
+2. **Validación de entrada**: Todos los inputs son sanitizados
+3. **SQL dinámico seguro**: Usar bind variables para prevenir SQL injection
+4. **Auditoría**: Logging de todas las operaciones sensibles
+
+### Validación de Entrada
 
 ```sql
-SELECT fn_get_total_orders('Cliente Ejemplo') AS total
-FROM DUAL;
--- Resultado: 1000.00
+CREATE OR REPLACE PROCEDURE safe_update (
+    p_id IN NUMBER,
+    p_value IN VARCHAR2
+) AS
+BEGIN
+    -- Validar que p_id es un número válido
+    IF NOT validate_input(p_id, 'NUMBER') THEN
+        RAISE_APPLICATION_ERROR(-20001, 'ID inválido');
+    END IF;
+    
+    -- Validar longitud de p_value
+    IF LENGTH(p_value) > 1000 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Valor demasiado largo');
+    END IF;
+    
+    -- Proceder con update
+    UPDATE table SET value = p_value WHERE id = p_id;
+END;
 ```
 
-### Auditoría
+## 🤝 Contribuir
 
-Los triggers registran automáticamente:
+Las contribuciones son bienvenidas. Por favor:
+1. Fork el repositorio
+2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
+3. Commit tus cambios (`git commit -m 'Add nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
+5. Abre un Pull Request
 
-- INSERT - Nueva orden creada
-- UPDATE - Orden actualizada
-- DELETE - Orden eliminada
-
-```sql
--- Ver auditoría
-SELECT * FROM order_audit_log
-ORDER BY audit_timestamp DESC;
-```
-
-## 📁 Archivos
-
-| Archivo | Descripción |
-|---------|-------------|
-| `plsql_procedures.sql` | Procedimientos y funciones básicos |
-| `advanced_plsql.sql` | PL/SQL avanzado |
-| `SECURITY.md` | Mejores prácticas de seguridad |
-| `README.md` | Este archivo |
-
-## 🔒 Mejores Prácticas PL/SQL
-
-### Seguridad
-
-1. **USING clause** - Siempre usar parámetros binding
-2. **Validación** - Verificar input antes de procesar
-3. **Excepciones** - Manejo correcto de errores
-4. **AUDIT** - Registrar operaciones sensibles
-
-### Rendimiento
-
-1. **Bulk Collect** - Para grandes volúmenes
-2. **INDEX** - Índices en columnas frecuentes
-3. **PL/SQL Result Cache** - Cachear funciones
+Ver [CONTRIBUTING.md](CONTRIBUTING.md) para más detalles.
 
 ## 🧪 Testing
 
-```sql
--- Test procedure
-BEGIN
-    sp_create_order(1, 'Test', 500);
-END;
-/
+```bash
+# Ejecutar setup
+./setup.sh
 
--- Test function
-SELECT fn_get_total_orders('Test') FROM DUAL;
-
--- Test trigger (verificar auditoría)
-SELECT * FROM order_audit_log;
+# Health check
+python3 health_check.py
 ```
 
-## 📝 Changelog
+## 📝 Licencia
 
-### v1.1.0 (2026-03-22)
-- ✅ advanced_plsql.sql añadido
-- ✅ Documentación de mejores prácticas
-- ✅ Security guide
+MIT - ver [LICENSE](LICENSE) para detalles.
 
-### v1.0.0 (2026-03-21)
-- ✅ Procedimientos básicos
-- ✅ Funciones de agregación
-- ✅ Triggers de auditoría
+## 🌐 Referencias
 
-## 📄 Licencia
+- [Oracle PL/SQL Documentation](https://docs.oracle.com/en/database/oracle/plsql/)
+- [Oracle APEX Documentation](https://docs.oracle.com/en/database/oracle/apex/)
+- [Oracle Database Security Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/)
+- [Oracle SQL*Plus User's Guide](https://docs.oracle.com/en/database/oracle/sqlplus/19/)
 
-MIT - Alejandro Kore
+## 👤 Autor
 
-## 🤖 Actualizado por
-
-OpenClaw AI Assistant - 2026-03-22
-*Mejoras: advanced_plsql.sql, documentación de mejores prácticas*
+**Alex** - [@alexkore12](https://github.com/alexkore12)
