@@ -65,22 +65,20 @@ EXEC nombre_procedimiento(parametros);
 ```
 oracle-apex-solution-20260321/
 ├── .dockerignore
-├── .env.example
-├── .gitattributes
+├── .env.example              # Variables de entorno
+├── .gitattributes            # Configuración Git
 ├── .gitignore
-├── .github/
-│   └── workflows/ci.yml
-├── advanced_plsql.sql        # PL/SQL avanzado
-├── CODE_OF_CONDUCT.md        # Código de conducta
-├── CODEOWNERS                # Owners del código
-├── CONTRIBUTING.md           # Guía de contribución
-├── docker-compose.yml        # Orquestación Docker
-├── health_check.py           # Verificación de salud
+├── advanced_plsql.sql         # PL/SQL avanzado - JSON, bulk ops, cache
+├── CODE_OF_CONDUCT.md
+├── CODEOWNERS
+├── CONTRIBUTING.md
+├── docker-compose.yml         # Oracle XE + APEX
+├── health_check.py           # Verificación de salud del sistema
 ├── LICENSE
-├── plsql_procedures.sql      # Procedimientos base
-├── README.md                 # Este archivo
-├── SECURITY.md               # Políticas de seguridad
-└── setup.sh                  # Script de configuración
+├── plsql_procedures.sql      # Procedimientos base - auditoría, logging
+├── README.md
+├── SECURITY.md
+└── setup.sh                   # Script de inicialización
 ```
 
 ## ⚙️ Configuración
