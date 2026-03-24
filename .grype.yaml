@@ -1,0 +1,22 @@
+# Grype vulnerability scanner configuration for oracle-apex-solution-20260321
+# https://github.com/anchore/grype
+
+name: oracle-apex-solution
+version: 1.0.0
+
+db:
+  check-for-app-update: true
+  auto-update: false
+
+output:
+  format: table
+
+severity:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+
+fail-on: medium
+
+env:
+  - PULLED_POLICY=*
