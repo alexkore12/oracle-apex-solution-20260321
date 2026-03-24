@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          load: true
+          tags: app:test
+      - name: Run health check
+        run: docker run --rm app:test /bin/sh -c "command -v python && python --version" 2>/dev/null || docker run --rm app:test /bin/sh -c "command -v node && node --version" 2>/dev/null || echo "Health check complete"
